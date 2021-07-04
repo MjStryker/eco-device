@@ -1,0 +1,13 @@
+version: "3.8"
+
+# docker-compose up --build
+
+services:
+  eco-device-app:
+    image: eco-device-app
+    container_name: eco-device-app
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    volumes:
+      - ./src:/code
