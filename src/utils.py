@@ -1,13 +1,16 @@
 import os.path
 import time
+import glob
+import ntpath
 
 from datetime import datetime
 from random import randint
 
 today = datetime.now()
-dateString = today.strftime("%Y-%m-%d %H:%M:%S")
+# dateString = today.strftime("%Y-%m-%d %H:%M:%S")
 
-fileExtension = ".xlsx"
+fileExtension = ".csv"
+dirname = "data"
 
 # Format
 # ------
@@ -18,28 +21,43 @@ fileExtension = ".xlsx"
 # 20:19:25 ; 17 ; 204
 
 
-def getFilename():
+def getTodaysFilename():
     return str(today.year) + "-" + str(today.month).zfill(2) + "-" + str(today.day).zfill(2) + "_water_gce_index" + fileExtension
 
 
-def getLastLineFromFile(filename, path="data"):
-    fullPath = os.path.join(path, filename)
+def getLatestFilename():
+    files = sorted(filter(lambda file: os.path.isfile(os.path.join(dirname, file)),
+                          os.listdir(dirname)))
+    if(len(files) == 0):
+        return None
+    latestFilename = files[-1]
+    return latestFilename
+
+
+def getLastLineFromFile(filename):
+    fullPath = os.path.join(dirname, filename)
     lastLine = None
-    with open(fullPath) as f:
+    with open(fullPath, "r") as f:
         lines = f.readlines()
-        if (len(lines)):
+        if (len(lines) > 0):
             lastLine = lines[-1]
     return lastLine
 
 
-def updateFileValue(filename, data, path="data"):
-    fullPath = os.path.join(path, filename)
-    with open(fullPath, "w") as f:
-        f.write(data)
+def getLastEntry():
+    latestFilename = getLatestFilename()
+    if(latestFilename is None):
+        return None
+    return getLastLineFromFile(latestFilename)
+
+# def updateFileValue(filename, data):
+#     fullPath = os.path.join(path, filename)
+#     with open(fullPath, "w") as f:
+#         f.write(data)
 
 
-def addDataToFile(filename, hour, data, path="data"):
-    fullPath = os.path.join(path, filename)
+def addDataToFile(filename, hour, data):
+    fullPath = os.path.join(dirname, filename)
     with open(fullPath, "a") as f:
         newLineData = [hour] + data
         print(newLineData)
@@ -47,19 +65,22 @@ def addDataToFile(filename, hour, data, path="data"):
         f.write(newLineStr + "\n")
 
 
-def test():
-    filename = getFilename()
-    lastEntry = getLastLineFromFile(filename)
+def getIndexTotal():
+    lastEntry = getLastEntry()
     total = 0 if lastEntry is None else lastEntry.split(";")[-1].rstrip()
-    print("Total:", total)
+    return int(total)
+
+
+# def getLastIndexValue():
+#     lastEntry = getLastLineFromFile(filename)
+#     total = 0 if lastEntry is None else lastEntry.split(";")[-2].rstrip()
+#     return total
 
 
 def generateRandomValues(n):
-    filename = getFilename()
+    todaysFilename = getTodaysFilename()
     for i in range(n):
-        lastEntry = getLastLineFromFile(filename)
-        total = 0 if lastEntry is None else int(
-            lastEntry.split(";")[-1].rstrip())
+        total = getIndexTotal()
         newValue = randint(0, 20) if randint(0, 1) == 1 else 0
         if(newValue > 0):
             now = datetime.now()
@@ -67,12 +88,20 @@ def generateRandomValues(n):
                 str(now.minute).zfill(2) + ":" + str(now.second).zfill(2)
             total += newValue
             data = [str(newValue), str(total)]
-            addDataToFile(filename, hour, data)
+            addDataToFile(todaysFilename, hour, data)
         else:
             print("0")
-        time.sleep(5)
+        time.sleep(1)
+
+
+def addEntry(date, idx_jour, idx_total):
+    filename = getTodaysFilename()
+    hour = str(date.hour).zfill(2) + ":" + \
+        str(date.minute).zfill(2) + ":" + str(date.second).zfill(2)
+    data = [str(idx_jour), str(idx_total)]
+    addDataToFile(filename, hour, data)
 
 
 if __name__ == "__main__":
-    # addDataToFile()
+    # print(getIndexTotal())
     generateRandomValues(50)
