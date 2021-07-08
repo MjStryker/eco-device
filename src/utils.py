@@ -7,7 +7,7 @@ from datetime import datetime
 from random import randint
 
 today = datetime.now()
-# dateString = today.strftime("%Y-%m-%d %H:%M:%S")
+dateString = today.strftime("%Y-%m-%d %H:%M:%S")
 
 fileExtension = ".csv"
 dirname = "data"
@@ -60,7 +60,7 @@ def addDataToFile(filename, hour, data):
     fullPath = os.path.join(dirname, filename)
     with open(fullPath, "a") as f:
         newLineData = [hour] + data
-        print(newLineData)
+        print(dateString, newLineData)
         newLineStr = ";".join(newLineData)
         f.write(newLineStr + "\n")
 
@@ -81,7 +81,7 @@ def generateRandomValues(n):
     todaysFilename = getTodaysFilename()
     for i in range(n):
         total = getIndexTotal()
-        newValue = randint(0, 20) if randint(0, 1) == 1 else 0
+        newValue = randint(0, 20) if randint(0, 2) == 1 else 0
         if(newValue > 0):
             now = datetime.now()
             hour = str(now.hour).zfill(2) + ":" + \
