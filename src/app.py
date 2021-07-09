@@ -1,13 +1,11 @@
-import sys
-import schedule
 import time
 
-from utils import *
-from gce import *
+import gce
+import fileManager
 
-gce_water = find_first_gce()
-gce_water_data = donnees(gce_water)
-gce_compteur = compteurs(gce_water)
+gce_water = gce.find_first_gce()
+gce_water_data = gce.donnees(gce_water)
+gce_compteur = gce.compteurs(gce_water)
 
 if (gce_water is None):
     # print("gce_water is None")
@@ -21,13 +19,7 @@ else:
 
 # def job():
 #     print("I'm working...")
-
-
-# schedule.every(5).seconds.do(job)
-
-# while True:
-#     schedule.run_pending()
-#     # time.sleep(1)
+#     time.sleep(5)
 
 
 if __name__ == "__main__":
