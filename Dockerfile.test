@@ -1,5 +1,5 @@
 # docker build -t eco-device-app -f Dockerfile.test .
-# docker run --rm --name eco-device-app -v /src:/code eco-device-app
+# docker run it --rm --name eco-device-app -v ~/Dev/eco-device/src:/code eco-device-app
 
 # Set base image (host OS)
 FROM python:3.9.6-slim
