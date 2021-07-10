@@ -1,7 +1,7 @@
 import os
 import time
 import config
-import fileManager
+import file_manager
 
 from pathlib import Path
 from datetime import datetime
@@ -23,7 +23,7 @@ def get_lastline_from_file(filepath):
 
 
 def get_lastdir_from_path(path: str):
-    fileManager.create_dir_if_does_not_exist(path)
+    file_manager.create_dir_if_does_not_exist(path)
 
     dirs = sorted(filter(
         lambda elt:
@@ -39,7 +39,7 @@ def get_lastdir_from_path(path: str):
 
 
 def get_lastestdir_path(device_type: config.Device_type):
-    path = fileManager.get_data_dir_path(device_type)
+    path = file_manager.get_data_dir_path(device_type)
 
     if(path is None):
         return None
@@ -89,14 +89,22 @@ def get_index_total(device_type: config.Device_type):
     return total
 
 
-def generate_random_entry(device_type: config.Device_type, i: int, n: int):
+def generate_random_entry(device_type: config.Device_type, i=0, n=0):
     total = get_index_total(device_type)
     newvalue = randint(0, 20) if randint(0, 2) == 1 else 0
     total += newvalue
 
-    addedvalue = " (+" + str(newvalue) + ")" if newvalue > 0 else ""
+    step = ""
 
-    print("[" + str(i+1).zfill(2) + "/" + str(n) + "] " + datetime.now().strftime("%Y-%m-%d %X") +
+    if (i >= 0 and n == 0):
+        step = "({}) ".format(i+1)
+
+    if (i >= 0 and n > 0):
+        step = "[{}/{}] ".format(i+1, n)
+
+    addedvalue = " (+{})".format(newvalue) if newvalue > 0 else ""
+
+    print(step + datetime.now().strftime("%Y-%m-%d %X") +
           " -> " + str(total) + addedvalue)
 
     return [newvalue, total]
@@ -108,7 +116,7 @@ def add_random_indexes(device_type: config.Device_type, n: int):
             gce_index_jour, gce_index_total = generate_random_entry(
                 device_type, i, n)
             if(gce_index_jour > 0):
-                fileManager.add_indexes(
+                file_manager.add_indexes(
                     datetime.now(), gce_index_jour, gce_index_total)
             if(i != n):
                 time.sleep(1)
@@ -121,4 +129,4 @@ if __name__ == "__main__":
     # print(get_lastfile_path(config.Device_type.WATER))
     # print(get_lastestdir_path(config.Device_type.WATER))
     # print(get_last_entry(config.Device_type.WATER))
-    add_random_indexes(config.Device_type.WATER, 50)
+    add_random_indexes(config.Device_type.WATER, 2)
