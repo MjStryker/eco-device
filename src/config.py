@@ -6,7 +6,8 @@ class Device_type(Enum):
     WATER = auto()
 
 
-homedir = path.expanduser('~')
+# homedir = path.expanduser('~')
+homedir = "/home"
 data_dirname = "eco-devices"
 
 filename_date_format = "%Y-%m-%d"
