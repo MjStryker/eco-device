@@ -1,34 +1,36 @@
+
+import os
+import sys
 import time
 
-import gce
-import fileManager
+from datetime import datetime
 
-gce_water = gce.find_first_gce()
-gce_water_data = gce.donnees(gce_water)
-gce_compteur = gce.compteurs(gce_water)
+import gce.devices.water as gce
 
-if (gce_water is None):
-    # print("gce_water is None")
-    gce_ip, gce_nom, gce_mac, gce_port = None, None, None, None
-    gce_index_total, gce_index_jour = None, None
-    # raise
-else:
-    gce_ip, gce_nom, gce_mac, gce_port = gce_water
-    gce_index_total = gce_water_data["INDEX_C1"]
-    gce_index_jour = gce_compteur["Day_C1"]
+import file_manager
 
-# def job():
-#     print("I'm working...")
-#     time.sleep(5)
+
+def job():
+    gce_index_jour, gce_index_total = gce.get_water_indexes()
+    print(" Index jour :", gce_index_jour, "\nIndex total :", gce_index_total)
+
+
+def loop():
+    i = 1
+    while True:
+        now = datetime.now()
+        print("{} - Executing job #{}".format(now.strftime("%X"), i))
+        job()
+        i += 1
+        time.sleep(5)
 
 
 if __name__ == "__main__":
-    # execute only if run as a script
-    print(" Index jour :", gce_index_jour, "\nIndex total :", gce_index_total)
-    # print(gce_port)
-    # print(gce_water)
-    # print("\ndonnees() :")
-    # print(donnees(gce_water))
-    # print("\ncompteurs() :")
-    # print(compteurs(gce_water))
-    # print("Done")
+    try:
+        loop()
+    except KeyboardInterrupt:
+        print('Interrupted')
+        try:
+            sys.exit(0)
+        except SystemExit:
+            os._exit(0)
