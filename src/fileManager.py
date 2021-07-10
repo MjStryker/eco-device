@@ -1,17 +1,10 @@
-import os.path
-import re
+from genericpath import isfile
+import os
+import config
 
-from pathlib import Path
 from datetime import datetime
-from typing import List
+from pathlib import Path
 
-today = datetime.now()
-dateString = today.strftime("%Y-%m-%d %H:%M:%S")
-
-fileNameSuffix = "_gce_device_water_index"
-fileExtension = ".csv"
-
-dataRootDirectoryName = "data"
 
 # Format
 # ------
@@ -22,82 +15,78 @@ dataRootDirectoryName = "data"
 # 20:19:25 ; 17 ; 204
 
 
-def getFolderPath():
-    return os.path.join(dataRootDirectoryName, str(today.year), str(today.month).zfill(2))
+# def is_device_type_instance(device_type: config.Device_type):
+#     if(not isinstance(device_type, config.Device_type)):
+#         raise ValueError("Error: device_type '" + device_type +
+#                          "' must be an instance of Enum 'Device_type'")
+#     return True
 
 
-def getTodaysFileName():
-    return str(today.year) + "-" + str(today.month).zfill(2) + "-" + str(today.day).zfill(2) + fileNameSuffix + fileExtension
+def get_data_dir_path(device_type: config.Device_type):
+    # is_device_type_instance(device_type)
+    device_type = device_type.name.lower()
+    return os.path.join(config.homedir, config.data_dirname, device_type)
 
 
-def getTodaysFileFullPath():
-    folderPath = getFolderPath()
-    fullPath = os.path.join(folderPath, getTodaysFileName())
-    Path(folderPath).mkdir(parents=True, exist_ok=True)
-    return fullPath
+def get_file_dir_path(date: datetime, device_type: config.Device_type):
+    dirPath = get_data_dir_path(device_type)
+    year, month = date.strftime("%Y"), date.strftime("%m")
+    return os.path.join(dirPath, year, month)
 
 
-def getLatestFileName():
-    folderPath = getFolderPath()
-    files = sorted(filter(lambda file: os.path.isfile(os.path.join(folderPath, file)),
-                          os.listdir(folderPath)))
-    if(len(files) == 0):
-        return None
-    latestFileName: str = files[-1]
-    return latestFileName
+def get_filename(date: datetime, device_type: config.Device_type):
+    # is_device_type_instance(device_type)
+    device_type = device_type.name.lower()
+    dateFormatted = date.strftime(
+        config.filename_date_format)
+    filenameElts = [dateFormatted, "gce_device", device_type, "index"]
+    return "_".join(filenameElts) + config.file_extension
 
 
-def getLastLineFromFile(filePath):
-    lastLine = None
-    try:
-        with open(filePath, "r") as f:
-            lines = f.readlines()
-            if (len(lines) > 0):
-                lastLine = lines[-1]
-    except:
-        print("File " + filePath + " does not exist and will be created...")
-    return lastLine
+def get_file_fullpath(date: datetime, device_type: config.Device_type):
+    # is_device_type_instance(device_type)
+    device_type = device_type.name.lower()
+    return os.path.join(get_file_dir_path(date, config.Device_type.WATER), get_filename(date, config.Device_type.WATER))
 
 
-def addDataToFile(filePath: str, hour: str, data: List[int]):
-    if(re.match("^\d{2}:\d{2}:\d{2}$", hour) is None):
-        raise ValueError(
-            "[addDataToFile] Error: Invalid hour format, expected 'hh:mm:ss', got " + hour)
-
-    with open(filePath, "a") as f:
-        newLineData: List[str, int, int] = [hour] + [str(e) for e in data]
-        print(dateString, newLineData)
-        newLineStr = ";".join(newLineData)
-        f.write(newLineStr + "\n")
+def create_dir_if_does_not_exist(dirpath):
+    if(not os.path.isdir(dirpath)):
+        print("Directory '" + dirpath + "' does not exist and will be created")
+    Path(dirpath).mkdir(parents=True, exist_ok=True)
 
 
-def getLastEntry():
-    filePath = getTodaysFileFullPath()
-    if(filePath is None):
-        return None
-    return getLastLineFromFile(filePath)
+def create_file_if_does_not_exist(filepath):
+    if(not os.path.isfile(filepath)):
+        print("File '" + filepath + "' does not exist and will be created")
+    file = Path(filepath)
+    file.touch(exist_ok=True)
 
 
-def addEntry(date, idx_jour, idx_total):
-    fileName = getTodaysFileName()
-    hour = str(date.hour).zfill(2) + ":" + \
-        str(date.minute).zfill(2) + ":" + str(date.second).zfill(2)
-    data = [str(idx_jour), str(idx_total)]
-    addDataToFile(fileName, hour, data)
+def append_data_to_file(dirpath: str, filename: str, data: str):
+    filepath = os.path.join(dirpath, filename)
+    create_dir_if_does_not_exist(dirpath)
+    create_file_if_does_not_exist(filepath)
+    with open(filepath, "a") as f:
+        f.write(data + "\n")
 
 
-def addIndexesToFile(gce_index_jour: int, gce_index_total: int):
-    indexFileFullPath = getTodaysFileFullPath()
+def add_indexes(date: datetime, gce_index_jour: int, gce_index_total: int):
+    # path = get_file_fullpath(date, config.Device_type.WATER)
+    dirpath = get_file_dir_path(date, config.Device_type.WATER)
+    filename = get_filename(date, config.Device_type.WATER)
+    hour = date.strftime("%X")
 
-    now = datetime.now()
-    hour = str(now.hour).zfill(2) + ":" + \
-        str(now.minute).zfill(2) + ":" + str(now.second).zfill(2)
+    data = [hour, gce_index_jour, gce_index_total]
+    dataStr = config.file_separator.join([str(e) for e in data])
 
-    data = [gce_index_jour, gce_index_total]
-
-    addDataToFile(indexFileFullPath, hour, data)
+    # print(dataStr)
+    append_data_to_file(dirpath, filename, dataStr)
 
 
 if __name__ == "__main__":
-    print(getLastEntry())
-    # print(getIndexTotal())
+    try:
+        print()
+        # now = datetime.now()
+        # add_indexes(now, 5, 23)
+    except ValueError as err:
+        print(err)
