@@ -89,23 +89,23 @@ def get_index_total(device_type: config.Device_type):
     return total
 
 
-def generate_random_entry(device_type: config.Device_type, i=0, n=0):
+def generate_random_entry(device_type: config.Device_type, step=0, end=0):
     total = get_index_total(device_type)
     newvalue = randint(0, 20) if randint(0, 2) == 1 else 0
     total += newvalue
 
-    step = ""
+    # step_str_format = ""
 
-    if (i >= 0 and n == 0):
-        step = "({}) ".format(i+1)
+    # if (step >= 0 and end == 0):
+    #     step_str_format = "({}) ".format(step+1)
 
-    if (i >= 0 and n > 0):
-        step = "[{}/{}] ".format(i+1, n)
+    # if (step >= 0 and end > 0):
+    #     step_str_format = "[{}/{}] ".format(step+1, end)
 
-    addedvalue = " (+{})".format(newvalue) if newvalue > 0 else ""
+    # addedvalue = " (+{})".format(newvalue) if newvalue > 0 else ""
 
-    print(step + datetime.now().strftime("%Y-%m-%d %X") +
-          " -> " + str(total) + addedvalue)
+    # print(step_str_format + datetime.now().strftime("%Y-%m-%d %X") +
+    #       " -> " + str(total) + addedvalue)
 
     return [newvalue, total]
 

@@ -59,6 +59,13 @@ def append_data_to_file(dirpath: str, filename: str, data: str):
         f.write(data + "\n")
 
 
+def get_file_nb_lines(date: datetime):
+    filepath = get_file_fullpath(date, config.Device_type.WATER)
+    create_file_if_does_not_exist(filepath)
+    with open(filepath, "r") as f:
+        return len(f.readlines())
+
+
 def add_indexes(date: datetime, gce_index_jour: int, gce_index_total: int):
     dirpath = get_file_dir_path(date, config.Device_type.WATER)
     filename = get_filename(date, config.Device_type.WATER)

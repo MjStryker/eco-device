@@ -1,6 +1,5 @@
 
 import os
-from random import randint
 import sys
 import time
 
@@ -12,12 +11,27 @@ import dev
 import file_manager
 import config
 
+env = "dev"
 
-def job(step: int):
-    # gce_index_jour, gce_index_total = gce.get_water_indexes()
-    # print(" Index jour :", gce_index_jour, "\nIndex total :", gce_index_total)
-    gce_index_jour, gce_index_total = dev.generate_random_entry(
-        config.Device_type.WATER, step)
+
+def job():
+    now = datetime.now()
+    job_nb = file_manager.get_file_nb_lines(now) + 1
+
+    if(env == "prod"):
+        gce_index_jour, gce_index_total = gce.get_water_indexes()
+        print(" Index jour :", gce_index_jour,
+              "\nIndex total :", gce_index_total)
+
+    elif(env == "dev"):
+        gce_index_jour, gce_index_total = dev.generate_random_entry(
+            config.Device_type.WATER)
+
+    addedvalue = " (+{})".format(gce_index_jour) if gce_index_jour > 0 else ""
+    step_str_format = "[ {} / {} ] ".format(job_nb, config.nb_of_steps_per_day)
+
+    print(step_str_format + datetime.now().strftime("%Y-%m-%d %X") +
+          " -> " + str(gce_index_total) + addedvalue)
 
     # if(gce_index_jour > 0):
     file_manager.add_indexes(
@@ -35,16 +49,16 @@ def wait_until_specific_time():
 
 
 def loop():
-    i = 0
     start_time = time.time()
     while True:
         wait_until_specific_time()
-        now = datetime.now()
-        print("{} - Executing job #{}".format(now.strftime("%X"), i+1))
-        job(i)
-        print()
+        # print("{} - Executing job #{}".format(now.strftime("%X"), job_nb+1))
+
+        job()
+
+        # print()
+
         time.sleep(config.delay - ((time.time() - start_time) % config.delay))
-        i += 1
 
 
 if __name__ == "__main__":
