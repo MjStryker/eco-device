@@ -1,5 +1,6 @@
 
 import os
+from random import randint
 import sys
 import time
 
@@ -23,25 +24,32 @@ def job(step: int):
         datetime.now(), gce_index_jour, gce_index_total)
 
 
-# FIXME: Use a scheduler module instead of "time.sleep()" to avoid increasing delays
-#        https://stackoverflow.com/questions/474528/what-is-the-best-way-to-repeatedly-execute-a-function-every-x-seconds
+def wait_until_specific_time():
+    run = True
+    while run:
+        now = datetime.now()
+        if(now.second % config.delay == 0):
+            break
+        # print("Not now...")
+        time.sleep(.5)
 
 
 def loop():
     i = 0
+    start_time = time.time()
     while True:
+        wait_until_specific_time()
         now = datetime.now()
         print("{} - Executing job #{}".format(now.strftime("%X"), i+1))
         job(i)
+        print()
+        time.sleep(config.delay - ((time.time() - start_time) % config.delay))
         i += 1
-        time.sleep(config.delay)
 
 
 if __name__ == "__main__":
     try:
-        # loop()
-        now = datetime.now()
-        print(now)
+        loop()
     except KeyboardInterrupt:
         print('Interrupted')
         try:
