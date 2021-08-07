@@ -1,4 +1,3 @@
-from os import path
 from enum import Enum, auto
 
 
@@ -10,6 +9,8 @@ class Device_type(Enum):
 homedir = "/home"
 data_dirname = "eco-devices"
 
-filename_date_format = "%Y-%m-%d"
+delay = 30
+
+filename_date_format = "%Y_%m_%d"
 file_extension = ".csv"
 file_separator = ";"

@@ -1,4 +1,3 @@
-from genericpath import isfile
 import os
 import config
 
@@ -8,22 +7,14 @@ from pathlib import Path
 
 # Format
 # ------
-# heure (HH:MM:SS) ; index jour ; index total
+# hour (HH:MM:SS) ; index day ; index total
 
-# Exemple
+# Example
 # -------
 # 20:19:25 ; 17 ; 204
 
 
-# def is_device_type_instance(device_type: config.Device_type):
-#     if(not isinstance(device_type, config.Device_type)):
-#         raise ValueError("Error: device_type '" + device_type +
-#                          "' must be an instance of Enum 'Device_type'")
-#     return True
-
-
 def get_data_dir_path(device_type: config.Device_type):
-    # is_device_type_instance(device_type)
     device_type = device_type.name.lower()
     return os.path.join(config.homedir, config.data_dirname, device_type)
 
@@ -35,7 +26,6 @@ def get_file_dir_path(date: datetime, device_type: config.Device_type):
 
 
 def get_filename(date: datetime, device_type: config.Device_type):
-    # is_device_type_instance(device_type)
     device_type = device_type.name.lower()
     dateFormatted = date.strftime(
         config.filename_date_format)
@@ -44,18 +34,17 @@ def get_filename(date: datetime, device_type: config.Device_type):
 
 
 def get_file_fullpath(date: datetime, device_type: config.Device_type):
-    # is_device_type_instance(device_type)
     device_type = device_type.name.lower()
     return os.path.join(get_file_dir_path(date, config.Device_type.WATER), get_filename(date, config.Device_type.WATER))
 
 
-def create_dir_if_does_not_exist(dirpath):
+def create_dir_if_does_not_exist(dirpath: str):
     if(not os.path.isdir(dirpath)):
         print("Directory '" + dirpath + "' does not exist and will be created")
     Path(dirpath).mkdir(parents=True, exist_ok=True)
 
 
-def create_file_if_does_not_exist(filepath):
+def create_file_if_does_not_exist(filepath: str):
     if(not os.path.isfile(filepath)):
         print("File '" + filepath + "' does not exist and will be created")
     file = Path(filepath)
@@ -71,7 +60,6 @@ def append_data_to_file(dirpath: str, filename: str, data: str):
 
 
 def add_indexes(date: datetime, gce_index_jour: int, gce_index_total: int):
-    # path = get_file_fullpath(date, config.Device_type.WATER)
     dirpath = get_file_dir_path(date, config.Device_type.WATER)
     filename = get_filename(date, config.Device_type.WATER)
     hour = date.strftime("%X")
@@ -79,7 +67,6 @@ def add_indexes(date: datetime, gce_index_jour: int, gce_index_total: int):
     data = [hour, gce_index_jour, gce_index_total]
     dataStr = config.file_separator.join([str(e) for e in data])
 
-    # print(dataStr)
     append_data_to_file(dirpath, filename, dataStr)
 
 
