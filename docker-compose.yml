@@ -11,6 +11,7 @@ services:
       dockerfile: Dockerfile
     stdin_open: true # docker run -i
     tty: true # docker run -t
+    restart: unless-stopped
     volumes:
       - ~/eco-devices:/home/eco-devices
       # Set the container localtime based on host
