@@ -13,6 +13,8 @@ import config
 
 env = "dev"
 
+# https://thedatafrog.com/en/articles/docker-influxdb-grafana/
+
 
 def job():
     now = datetime.now()
@@ -52,11 +54,9 @@ def loop():
     start_time = time.time()
     while True:
         wait_until_specific_time()
-        # print("{} - Executing job #{}".format(now.strftime("%X"), job_nb+1))
 
-        job()
-
-        # print()
+        # job()
+        print("Job :D")
 
         time.sleep(config.delay - ((time.time() - start_time) % config.delay))
 
