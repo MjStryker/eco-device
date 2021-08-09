@@ -14,28 +14,28 @@ from pathlib import Path
 # 20:19:25 ; 17 ; 204
 
 
-def get_data_dir_path(device_type: config.Device_type):
-    device_type = device_type.name.lower()
-    return os.path.join(config.homedir, config.data_dirname, device_type)
+def get_data_dir_path(data_source: config. data_source):
+     data_source = data_source.name.lower()
+    return os.path.join(config.homedir, config.data_dirname,  data_source)
 
 
-def get_file_dir_path(date: datetime, device_type: config.Device_type):
-    dirPath = get_data_dir_path(device_type)
+def get_file_dir_path(date: datetime,  data_source: config. data_source):
+    dirPath = get_data_dir_path( data_source)
     year, month = date.strftime("%Y"), date.strftime("%m")
     return os.path.join(dirPath, year, month)
 
 
-def get_filename(date: datetime, device_type: config.Device_type):
-    device_type = device_type.name.lower()
+def get_filename(date: datetime,  data_source: config. data_source):
+     data_source =  data_source.name.lower()
     dateFormatted = date.strftime(
         config.filename_date_format)
-    filenameElts = [dateFormatted, "gce_device", device_type, "index"]
+    filenameElts = [dateFormatted, "gce_device",  data_source, "index"]
     return "_".join(filenameElts) + config.file_extension
 
 
-def get_file_fullpath(date: datetime, device_type: config.Device_type):
-    device_type = device_type.name.lower()
-    return os.path.join(get_file_dir_path(date, config.Device_type.WATER), get_filename(date, config.Device_type.WATER))
+def get_file_fullpath(date: datetime,  data_source: config. data_source):
+     data_source =  data_source.name.lower()
+    return os.path.join(get_file_dir_path(date, config. data_source.WATER), get_filename(date, config. data_source.WATER))
 
 
 def create_dir_if_does_not_exist(dirpath: str):
@@ -60,15 +60,15 @@ def append_data_to_file(dirpath: str, filename: str, data: str):
 
 
 def get_file_nb_lines(date: datetime):
-    filepath = get_file_fullpath(date, config.Device_type.WATER)
+    filepath = get_file_fullpath(date, config. data_source.WATER)
     create_file_if_does_not_exist(filepath)
     with open(filepath, "r") as f:
         return len(f.readlines())
 
 
 def add_indexes(date: datetime, water_daily_consumption: int, water_counter_index: int):
-    dirpath = get_file_dir_path(date, config.Device_type.WATER)
-    filename = get_filename(date, config.Device_type.WATER)
+    dirpath = get_file_dir_path(date, config. data_source.WATER)
+    filename = get_filename(date, config. data_source.WATER)
     hour = date.strftime("%X")
 
     data = [hour, water_daily_consumption, water_counter_index]

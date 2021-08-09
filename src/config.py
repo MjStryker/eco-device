@@ -10,7 +10,7 @@ from enum import Enum, auto
 NB_OF_SECONDS_IN_A_DAY = 86400
 
 
-class Device_type(Enum):
+class data_source(Enum):
     WATER = auto()
 
 
@@ -18,9 +18,10 @@ class Device_type(Enum):
 homedir = "/home"
 data_dirname = "eco-devices"
 
-delay = 5  # In seconds
+delay = 30  # seconds
+
 nb_of_steps_per_day = int(NB_OF_SECONDS_IN_A_DAY / delay)
 
-filename_date_format = "%Y_%m_%d"
-file_extension = ".csv"
-file_separator = ";"
+# filename_date_format = "%Y_%m_%d"
+# file_extension = ".csv"
+# file_separator = ";"

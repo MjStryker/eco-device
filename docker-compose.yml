@@ -11,6 +11,7 @@ services:
       - "8086:8086"
     volumes:
       - influxdb:/var/lib/influxdb
+      - /etc/localtime:/etc/localtime
     environment:
       - INFLUXDB_DB=${INFLUXDB_DB}
       - INFLUXDB_USER=${INFLUXDB_USER}
@@ -47,6 +48,7 @@ services:
       - "3000:3000"
     volumes:
       - grafana:/var/lib/grafana
+      - /etc/localtime:/etc/localtime
     environment:
       - GF_SECURITY_ADMIN_USER=${GRAFANA_SECURITY_ADMIN_USER}
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_SECURITY_ADMIN_PASSWORD}

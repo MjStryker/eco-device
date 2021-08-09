@@ -38,8 +38,8 @@ def get_lastdir_from_path(path: str):
     return dirs[-1]
 
 
-def get_lastestdir_path(device_type: config.Device_type):
-    path = file_manager.get_data_dir_path(device_type)
+def get_lastestdir_path(data_source: config. data_source):
+    path = file_manager.get_data_dir_path(data_source)
 
     if(path is None):
         return None
@@ -59,8 +59,8 @@ def get_lastestdir_path(device_type: config.Device_type):
     return lastdirpath
 
 
-def get_lastfile_path(device_type: config.Device_type):
-    lastdirpath = get_lastestdir_path(device_type)
+def get_lastfile_path(data_source: config. data_source):
+    lastdirpath = get_lastestdir_path(data_source)
 
     if(lastdirpath is None):
         return None
@@ -75,33 +75,33 @@ def get_lastfile_path(device_type: config.Device_type):
     return os.path.join(lastdirpath, latest_filename)
 
 
-def get_last_entry(device_type: config.Device_type):
-    filepath = get_lastfile_path(device_type)
+def get_last_entry(data_source: config. data_source):
+    filepath = get_lastfile_path(data_source)
     if(filepath is None):
         return None
     return get_lastline_from_file(filepath)
 
 
-def get_index_total(device_type: config.Device_type):
-    lastEntry = get_last_entry(device_type)
+def get_index_total(data_source: config. data_source):
+    lastEntry = get_last_entry(data_source)
     total = 0 if lastEntry is None else int(
         lastEntry.split(config.file_separator)[-1].rstrip())
     return total
 
 
-def generate_random_entry(device_type: config.Device_type, step=0, end=0):
-    total = get_index_total(device_type)
+def generate_random_entry(data_source: config. data_source, step=0, end=0):
+    total = get_index_total(data_source)
     newvalue = randint(0, 20) if randint(0, 2) == 1 else 0
     total += newvalue
 
     return [newvalue, total]
 
 
-def add_random_indexes(device_type: config.Device_type, n: int):
+def add_random_indexes(data_source: config. data_source, n: int):
     for i in range(n):
         try:
             daily_consumption, total_index = generate_random_entry(
-                device_type, i, n)
+                data_source, i, n)
             if(daily_consumption > 0):
                 file_manager.add_indexes(
                     datetime.now(), daily_consumption, total_index)
@@ -112,8 +112,8 @@ def add_random_indexes(device_type: config.Device_type, n: int):
 
 
 if __name__ == "__main__":
-    # print(get_lastestdir_path(config.Device_type.WATER))
-    # print(get_lastfile_path(config.Device_type.WATER))
-    # print(get_lastestdir_path(config.Device_type.WATER))
-    # print(get_last_entry(config.Device_type.WATER))
-    add_random_indexes(config.Device_type.WATER, 2)
+    # print(get_lastestdir_path(config. data_source.WATER))
+    # print(get_lastfile_path(config. data_source.WATER))
+    # print(get_lastestdir_path(config. data_source.WATER))
+    # print(get_last_entry(config. data_source.WATER))
+    add_random_indexes(config. data_source.WATER, 2)

@@ -11,8 +11,8 @@ import sys
 import time
 
 
-# import dev
 # import file_manager
+from dev import generate_random_entry
 
 load_dotenv()
 
@@ -26,6 +26,12 @@ DB_USER_PASSWORD = os.getenv("DB_USER_PASSWORD")
 
 # https://thedatafrog.com/en/articles/docker-influxdb-grafana/
 
+# influx -execute 'SELECT daily_consumption FROM WATER' -database 'eco_device_db'
+
+# influx -precision rfc3339
+# use eco_device_db
+# SELECT daily_consumption FROM WATER
+
 
 def wait_for_db_to_be_ready():
     time.sleep(5)
@@ -36,6 +42,9 @@ def get_db_client():
                           username=DB_USER_NAME, password=DB_USER_PASSWORD, database=DB_NAME)
 
 
+water_data_source = config.data_source.WATER.name.upper()
+
+
 def job(client):
     now = datetime.now()
 
@@ -43,20 +52,27 @@ def job(client):
         water_daily_consumption, water_counter_index = gce.get_water_indexes()
 
     elif(ENV == "dev"):
-        water_daily_consumption, water_counter_index = (0, 0)
+        water_daily_consumption, water_counter_index = generate_random_entry(
+            client, water_data_source)
+
+    # water_daily_consumption, water_counter_index = (0, 0)
 
     # print(" Index jour :", water_daily_consumption,
     #       "\nIndex total :", water_counter_index)
 
     json_body = [{
-        "measurement": config.Device_type.WATER.name,
+        "measurement": water_data_source,
         "tags": {},
-        "time": now.isoformat(),
+        "time": now,
         "fields": {
             "daily_consumption": water_daily_consumption,
             "counter_index": water_counter_index
         }}]
 
+    print("{now} - {water_daily_consumption} - {water_counter_index}".format(now=now.strftime("%Y-%m-%d %X"),
+                                                                             water_daily_consumption=water_daily_consumption, water_counter_index=water_counter_index))
+
+    # if(water_daily_consumption > 0):
     client.write_points(json_body)
 
 
@@ -72,7 +88,7 @@ def loop(client):
     start_time = time.time()
     while True:
         wait_until_time_delay()
-        # job(client)
+        job(client)
         time.sleep(config.delay - ((time.time() - start_time) % config.delay))
 
 
@@ -99,7 +115,7 @@ if __name__ == "__main__":
 
     # elif(ENV == "dev"):
     #     water_daily_consumption , water_counter_index  = dev.generate_random_entry(
-    #         config.Device_type.WATER)
+    #         config.data_source.WATER)
 
 #     addedvalue = " (+{})".format(water_daily_consumption ) if water_daily_consumption  > 0 else ""
 #     step_str_format = "[ {} / {} ] ".format(job_nb, config.nb_of_steps_per_day)
