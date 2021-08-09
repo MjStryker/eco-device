@@ -66,12 +66,12 @@ def get_file_nb_lines(date: datetime):
         return len(f.readlines())
 
 
-def add_indexes(date: datetime, gce_index_jour: int, gce_index_total: int):
+def add_indexes(date: datetime, water_daily_consumption: int, water_counter_index: int):
     dirpath = get_file_dir_path(date, config.Device_type.WATER)
     filename = get_filename(date, config.Device_type.WATER)
     hour = date.strftime("%X")
 
-    data = [hour, gce_index_jour, gce_index_total]
+    data = [hour, water_daily_consumption, water_counter_index]
     dataStr = config.file_separator.join([str(e) for e in data])
 
     append_data_to_file(dirpath, filename, dataStr)

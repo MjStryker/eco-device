@@ -12,12 +12,12 @@ services:
     volumes:
       - influxdb:/var/lib/influxdb
     environment:
-      - INFLUXDB_DB=grafana
-      - INFLUXDB_USER=grafana
-      - INFLUXDB_USER_PASSWORD=grafana
-      - INFLUXDB_ADMIN_ENABLED=true
-      - INFLUXDB_ADMIN_USER=admin
-      - INFLUXDB_ADMIN_USER_PASSWORD=admin
+      - INFLUXDB_DB=${INFLUXDB_DB}
+      - INFLUXDB_USER=${INFLUXDB_USER}
+      - INFLUXDB_USER_PASSWORD=${INFLUXDB_USER_PASSWORD}
+      - INFLUXDB_ADMIN_ENABLED=${INFLUXDB_ADMIN_ENABLED}
+      - INFLUXDB_ADMIN_USER=${INFLUXDB_ADMIN_USER}
+      - INFLUXDB_ADMIN_USER_PASSWORD=${INFLUXDB_ADMIN_USER_PASSWORD}
 
   app:
     image: eco-device-app
@@ -25,10 +25,17 @@ services:
     restart: unless-stopped
     build:
       context: .
-    # ports:
-    #   - "3013:3003"
-    # volumes:
-    #   - /etc/localtime:/etc/localtime
+    volumes:
+      - /etc/localtime:/etc/localtime
+    stdin_open: true # docker run -i
+    tty: true # docker run -t
+    environment:
+      - ENV=${ENV}
+      - DB_HOST=eco-device-db
+      - DB_PORT=8086
+      - DB_NAME=${INFLUXDB_DB}
+      - DB_USER_NAME=${INFLUXDB_USER}
+      - DB_USER_PASSWORD=${INFLUXDB_USER_PASSWORD}
     depends_on:
       - db
 
@@ -40,6 +47,9 @@ services:
       - "3000:3000"
     volumes:
       - grafana:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_SECURITY_ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_SECURITY_ADMIN_PASSWORD}
     depends_on:
       - db
 

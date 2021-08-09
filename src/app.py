@@ -1,72 +1,112 @@
 
+import config
+import gce.devices.water as gce
+
+from datetime import datetime
+from influxdb import InfluxDBClient
+from dotenv import load_dotenv
+
 import os
 import sys
 import time
 
-from datetime import datetime
 
-import gce.devices.water as gce
+# import dev
+# import file_manager
 
-import dev
-import file_manager
-import config
+load_dotenv()
 
-env = "dev"
+ENV = os.getenv("ENV") or "dev"
+
+DB_HOST = os.getenv("DB_HOST")
+DB_PORT = os.getenv("DB_PORT")
+DB_NAME = os.getenv("DB_NAME")
+DB_USER_NAME = os.getenv("DB_USER_NAME")
+DB_USER_PASSWORD = os.getenv("DB_USER_PASSWORD")
 
 # https://thedatafrog.com/en/articles/docker-influxdb-grafana/
 
 
-def job():
+def wait_for_db_to_be_ready():
+    time.sleep(5)
+
+
+def get_db_client():
+    return InfluxDBClient(host=DB_HOST, port=DB_PORT,
+                          username=DB_USER_NAME, password=DB_USER_PASSWORD, database=DB_NAME)
+
+
+def job(client):
     now = datetime.now()
-    job_nb = file_manager.get_file_nb_lines(now) + 1
 
-    if(env == "prod"):
-        gce_index_jour, gce_index_total = gce.get_water_indexes()
-        print(" Index jour :", gce_index_jour,
-              "\nIndex total :", gce_index_total)
+    if(ENV == "prod"):
+        water_daily_consumption, water_counter_index = gce.get_water_indexes()
 
-    elif(env == "dev"):
-        gce_index_jour, gce_index_total = dev.generate_random_entry(
-            config.Device_type.WATER)
+    elif(ENV == "dev"):
+        water_daily_consumption, water_counter_index = (0, 0)
 
-    addedvalue = " (+{})".format(gce_index_jour) if gce_index_jour > 0 else ""
-    step_str_format = "[ {} / {} ] ".format(job_nb, config.nb_of_steps_per_day)
+    # print(" Index jour :", water_daily_consumption,
+    #       "\nIndex total :", water_counter_index)
 
-    print(step_str_format + datetime.now().strftime("%Y-%m-%d %X") +
-          " -> " + str(gce_index_total) + addedvalue)
+    json_body = [{
+        "measurement": config.Device_type.WATER.name,
+        "tags": {},
+        "time": now.isoformat(),
+        "fields": {
+            "daily_consumption": water_daily_consumption,
+            "counter_index": water_counter_index
+        }}]
 
-    # if(gce_index_jour > 0):
-    file_manager.add_indexes(
-        datetime.now(), gce_index_jour, gce_index_total)
+    client.write_points(json_body)
 
 
-def wait_until_specific_time():
-    run = True
-    while run:
+def wait_until_time_delay():
+    while True:
         now = datetime.now()
         if(now.second % config.delay == 0):
             break
-        # print("Not now...")
-        time.sleep(.5)
+        time.sleep(.2)
 
 
-def loop():
+def loop(client):
     start_time = time.time()
     while True:
-        wait_until_specific_time()
-
-        # job()
-        print("Job :D")
-
+        wait_until_time_delay()
+        # job(client)
         time.sleep(config.delay - ((time.time() - start_time) % config.delay))
 
 
 if __name__ == "__main__":
     try:
-        loop()
+        wait_for_db_to_be_ready()
+        client = get_db_client()
+        loop(client)
     except KeyboardInterrupt:
         print('Interrupted')
         try:
             sys.exit(0)
         except SystemExit:
             os._exit(0)
+
+# def job():
+#     now = datetime.now()
+#     job_nb = file_manager.get_file_nb_lines(now) + 1
+
+    # if(ENV == "prod"):
+    #     water_daily_consumption , water_counter_index  = gce.get_water_indexes()
+    #     print(" Index jour :", water_daily_consumption ,
+    #           "\nIndex total :", water_counter_index )
+
+    # elif(ENV == "dev"):
+    #     water_daily_consumption , water_counter_index  = dev.generate_random_entry(
+    #         config.Device_type.WATER)
+
+#     addedvalue = " (+{})".format(water_daily_consumption ) if water_daily_consumption  > 0 else ""
+#     step_str_format = "[ {} / {} ] ".format(job_nb, config.nb_of_steps_per_day)
+
+#     print(step_str_format + datetime.now().strftime("%Y-%m-%d %X") +
+#           " -> " + str(water_counter_index ) + addedvalue)
+
+#     # if(water_daily_consumption  > 0):
+#     file_manager.add_indexes(
+#         datetime.now(), water_daily_consumption , water_counter_index )

@@ -94,30 +94,17 @@ def generate_random_entry(device_type: config.Device_type, step=0, end=0):
     newvalue = randint(0, 20) if randint(0, 2) == 1 else 0
     total += newvalue
 
-    # step_str_format = ""
-
-    # if (step >= 0 and end == 0):
-    #     step_str_format = "({}) ".format(step+1)
-
-    # if (step >= 0 and end > 0):
-    #     step_str_format = "[{}/{}] ".format(step+1, end)
-
-    # addedvalue = " (+{})".format(newvalue) if newvalue > 0 else ""
-
-    # print(step_str_format + datetime.now().strftime("%Y-%m-%d %X") +
-    #       " -> " + str(total) + addedvalue)
-
     return [newvalue, total]
 
 
 def add_random_indexes(device_type: config.Device_type, n: int):
     for i in range(n):
         try:
-            gce_index_jour, gce_index_total = generate_random_entry(
+            daily_consumption, total_index = generate_random_entry(
                 device_type, i, n)
-            if(gce_index_jour > 0):
+            if(daily_consumption > 0):
                 file_manager.add_indexes(
-                    datetime.now(), gce_index_jour, gce_index_total)
+                    datetime.now(), daily_consumption, total_index)
             if(i != n):
                 time.sleep(1)
         except ValueError as err:
