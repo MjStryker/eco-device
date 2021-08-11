@@ -24,12 +24,18 @@ DB_NAME = os.getenv("DB_NAME")
 DB_USER_NAME = os.getenv("DB_USER_NAME")
 DB_USER_PASSWORD = os.getenv("DB_USER_PASSWORD")
 
-# https://thedatafrog.com/en/articles/docker-influxdb-grafana/
 
-# influx -execute 'SELECT daily_consumption FROM WATER' -database 'eco_device_db'
+# Open InfluxDB CLI
+# -----------------
+# influx -precision rfc3339 -database eco_device_db
 
-# influx -precision rfc3339
-# use eco_device_db
+# Change default retention policy to 3 years
+# ------------------------------------------
+# ALTER RETENTION POLICY "autogen" ON "eco_device_db" DURATION 1110d
+# SHOW RETENTION POLICIES
+
+# Basic SQL select operation
+# --------------------------
 # SELECT daily_consumption FROM WATER
 
 
@@ -55,15 +61,12 @@ def job(client):
         water_daily_consumption, water_counter_index = generate_random_entry(
             client, water_data_source)
 
-    # water_daily_consumption, water_counter_index = (0, 0)
-
-    # print(" Index jour :", water_daily_consumption,
-    #       "\nIndex total :", water_counter_index)
+    # water_daily_consumption, water_counter_index = (12, 92)
 
     json_body = [{
         "measurement": water_data_source,
         "tags": {},
-        "time": now,
+        "time": now.astimezone(),
         "fields": {
             "daily_consumption": water_daily_consumption,
             "counter_index": water_counter_index
@@ -72,7 +75,6 @@ def job(client):
     print("{now} - {water_daily_consumption} - {water_counter_index}".format(now=now.strftime("%Y-%m-%d %X"),
                                                                              water_daily_consumption=water_daily_consumption, water_counter_index=water_counter_index))
 
-    # if(water_daily_consumption > 0):
     client.write_points(json_body)
 
 
@@ -108,17 +110,20 @@ if __name__ == "__main__":
 #     now = datetime.now()
 #     job_nb = file_manager.get_file_nb_lines(now) + 1
 
-    # if(ENV == "prod"):
-    #     water_daily_consumption , water_counter_index  = gce.get_water_indexes()
-    #     print(" Index jour :", water_daily_consumption ,
-    #           "\nIndex total :", water_counter_index )
+#     if(ENV == "prod"):
+#         water_daily_consumption , water_counter_index  = gce.get_water_indexes()
+#         print(" Index jour :", water_daily_consumption ,
+#               "\nIndex total :", water_counter_index )
 
-    # elif(ENV == "dev"):
-    #     water_daily_consumption , water_counter_index  = dev.generate_random_entry(
-    #         config.data_source.WATER)
+#     elif(ENV == "dev"):
+#         water_daily_consumption , water_counter_index  = dev.generate_random_entry(
+#             config.data_source.WATER)
 
 #     addedvalue = " (+{})".format(water_daily_consumption ) if water_daily_consumption  > 0 else ""
 #     step_str_format = "[ {} / {} ] ".format(job_nb, config.nb_of_steps_per_day)
+
+#     print(" Index jour :", water_daily_consumption,
+#           "\nIndex total :", water_counter_index)
 
 #     print(step_str_format + datetime.now().strftime("%Y-%m-%d %X") +
 #           " -> " + str(water_counter_index ) + addedvalue)

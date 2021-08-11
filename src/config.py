@@ -20,7 +20,7 @@ data_dirname = "eco-devices"
 
 delay = 30  # seconds
 
-nb_of_steps_per_day = int(NB_OF_SECONDS_IN_A_DAY / delay)
+nb_of_steps_per_day = int(NB_OF_SECONDS_IN_A_DAY / delay)  # 86400 / 30 = 2880
 
 # filename_date_format = "%Y_%m_%d"
 # file_extension = ".csv"
