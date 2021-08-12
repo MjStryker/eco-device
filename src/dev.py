@@ -1,132 +1,49 @@
-import os
-import time
-import config
-import file_manager
-
-from pathlib import Path
 from datetime import datetime
-from glob import glob
-from typing import List
 from random import randint
 
-
-def get_lastline_from_file(filepath):
-    lastLine = None
-    try:
-        with open(filepath, "r") as f:
-            lines = f.readlines()
-            if (len(lines) > 0):
-                lastLine = lines[-1]
-    except:
-        print("File " + filepath + " does not exist and will be created...")
-    return lastLine
+#  From 21:00 to 07:00
 
 
-def get_lastdir_from_path(path: str):
-    file_manager.create_dir_if_does_not_exist(path)
+def simulate_water_usage(time):
+    if ((time.hour > 21 and time.hour <= 23) or (time.hour >= 0 and time.hour < 7)):
+        return randint(0, 120) == 0
 
-    dirs = sorted(filter(
-        lambda elt:
-            os.path.isdir(os.path.join(path, elt))
-            and os.listdir(os.path.join(path, elt)),
-        os.listdir(path)
-    ))
-
-    if (len(dirs) == 0):
-        return None
-
-    return dirs[-1]
+    return randint(0, 60) == 0
 
 
-def get_lastestdir_path(device_type: config.Device_type):
-    path = file_manager.get_data_dir_path(device_type)
-
-    if(path is None):
-        return None
-
-    year = get_lastdir_from_path(path)
-
-    if(year is None):
-        return None
-
-    month = get_lastdir_from_path(os.path.join(path, year))
-
-    if(month is None):
-        return None
-
-    lastdirpath = os.path.join(path, year, month)
-
-    return lastdirpath
+def get_last_db_record(client, data_source: str):
+    # return client.query('SELECT LAST(*) FROM {data_source}'.format(data_source=data_source.upper()))
+    # return client.query('SELECT * FROM {data_source} GROUP BY * ORDER BY DESC LIMIT 1'.format(data_source=data_source.upper()))
+    return client.query('SELECT * FROM {data_source} ORDER BY DESC LIMIT 1'.format(data_source=data_source.upper()))
 
 
-def get_lastfile_path(device_type: config.Device_type):
-    lastdirpath = get_lastestdir_path(device_type)
+def generate_random_entry(client, data_source: str):
+    now = datetime.now()
+    latest_record_query_res = get_last_db_record(client, data_source.upper())
+    latest_record = next(latest_record_query_res.get_points())
 
-    if(lastdirpath is None):
-        return None
+    latest_record_time_str = latest_record["time"]
+    latest_record_time_date = datetime.strptime(
+        latest_record_time_str, "%Y-%m-%dT%H:%M:%S.%fZ").day
 
-    files = sorted(filter(lambda file: os.path.isfile(os.path.join(lastdirpath, file)),
-                          os.listdir(lastdirpath)))
-    if(len(files) == 0):
-        return None
+    daily_consumption = latest_record["daily_consumption"] if latest_record_time_date == now.day else 0
+    counter_index = latest_record["counter_index"]
 
-    latest_filename: str = files[-1]
+    newvalue = randint(1, 6) if simulate_water_usage(now) else 0
 
-    return os.path.join(lastdirpath, latest_filename)
+    daily_consumption += newvalue
+    counter_index += newvalue
 
-
-def get_last_entry(device_type: config.Device_type):
-    filepath = get_lastfile_path(device_type)
-    if(filepath is None):
-        return None
-    return get_lastline_from_file(filepath)
-
-
-def get_index_total(device_type: config.Device_type):
-    lastEntry = get_last_entry(device_type)
-    total = 0 if lastEntry is None else int(
-        lastEntry.split(config.file_separator)[-1].rstrip())
-    return total
-
-
-def generate_random_entry(device_type: config.Device_type, step=0, end=0):
-    total = get_index_total(device_type)
-    newvalue = randint(0, 20) if randint(0, 2) == 1 else 0
-    total += newvalue
-
-    # step_str_format = ""
-
-    # if (step >= 0 and end == 0):
-    #     step_str_format = "({}) ".format(step+1)
-
-    # if (step >= 0 and end > 0):
-    #     step_str_format = "[{}/{}] ".format(step+1, end)
-
-    # addedvalue = " (+{})".format(newvalue) if newvalue > 0 else ""
-
-    # print(step_str_format + datetime.now().strftime("%Y-%m-%d %X") +
-    #       " -> " + str(total) + addedvalue)
-
-    return [newvalue, total]
-
-
-def add_random_indexes(device_type: config.Device_type, n: int):
-    for i in range(n):
-        try:
-            gce_index_jour, gce_index_total = generate_random_entry(
-                device_type, i, n)
-            if(gce_index_jour > 0):
-                file_manager.add_indexes(
-                    datetime.now(), gce_index_jour, gce_index_total)
-            if(i != n):
-                time.sleep(1)
-        except ValueError as err:
-            print(err)
+    return (daily_consumption, counter_index)
 
 
 if __name__ == "__main__":
-    # print(get_lastestdir_path(config.Device_type.WATER))
-    # print(get_lastfile_path(config.Device_type.WATER))
-    # print(get_lastestdir_path(config.Device_type.WATER))
-    # print(get_last_entry(config.Device_type.WATER))
-    add_random_indexes(config.Device_type.WATER, 2)
+    now = datetime.now()
+    print(now.astimezone())
+    # water_daily_consumption, water_counter_index = (0, 0)
+    # simulate_water_usage(now)
+    # res = {"True": 0,
+    #        "False": 0}
+    # for i in range(50):
+    #     res["{}".format(randint(0, 15) == 0)] += 1
+    # print(res)

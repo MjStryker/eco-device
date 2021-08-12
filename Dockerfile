@@ -2,7 +2,7 @@
 # docker run it --rm --name eco-device-app -v ~/eco-devices:/home/eco-devices eco-device-app
 
 # Set base image (host OS)
-FROM python:3.9.6-slim
+FROM python:3.9-slim
 
 # Set the working directory in the container
 WORKDIR /code

@@ -1,18 +1,61 @@
-version: "3.8"
+version: "3.9"
 
 # docker-compose up --build
 
 services:
-  eco-device-app:
+  db:
+    image: influxdb:1.7-alpine
+    container_name: eco-device-db
+    restart: unless-stopped
+    ports:
+      - "8086:8086"
+    volumes:
+      - influxdb:/var/lib/influxdb
+      - /etc/localtime:/etc/localtime
+    environment:
+      - INFLUXDB_DB=${INFLUXDB_DB}
+      - INFLUXDB_USER=${INFLUXDB_USER}
+      - INFLUXDB_USER_PASSWORD=${INFLUXDB_USER_PASSWORD}
+      - INFLUXDB_ADMIN_ENABLED=${INFLUXDB_ADMIN_ENABLED}
+      - INFLUXDB_ADMIN_USER=${INFLUXDB_ADMIN_USER}
+      - INFLUXDB_ADMIN_USER_PASSWORD=${INFLUXDB_ADMIN_USER_PASSWORD}
+
+  app:
     image: eco-device-app
     container_name: eco-device-app
+    restart: unless-stopped
     build:
       context: .
-      dockerfile: Dockerfile
+    volumes:
+      - /etc/localtime:/etc/localtime
     stdin_open: true # docker run -i
     tty: true # docker run -t
+    environment:
+      - ENV=${ENV}
+      - DB_HOST=eco-device-db
+      - DB_PORT=8086
+      - DB_NAME=${INFLUXDB_DB}
+      - DB_USER_NAME=${INFLUXDB_USER}
+      - DB_USER_PASSWORD=${INFLUXDB_USER_PASSWORD}
+    depends_on:
+      - db
+    network_mode: "host" # To access local network and connected devices
+
+  dashboard:
+    image: grafana/grafana:8.1.0
+    container_name: eco-device-dashboard
     restart: unless-stopped
+    ports:
+      - "3000:3000"
     volumes:
-      - ~/eco-devices:/home/eco-devices
-      # Set the container localtime based on host
+      - grafana:/var/lib/grafana
       - /etc/localtime:/etc/localtime
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_SECURITY_ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_SECURITY_ADMIN_PASSWORD}
+    depends_on:
+      - db
+
+volumes:
+  influxdb:
+  grafana:

@@ -1,2 +1,4 @@
+python-dotenv
+influxdb
 schedule
 requests

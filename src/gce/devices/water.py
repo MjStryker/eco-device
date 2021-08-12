@@ -12,20 +12,26 @@ def get_water_info():
     return [gce_ip, gce_nom, gce_mac, gce_port]
 
 
+first_gce_device = gce.find_first_gce()
+
+
 def get_water_indexes():
-    gce_water = gce.find_first_gce()
+    gce_water = first_gce_device
+    if (gce_water is None):
+        gce_water = gce.find_first_gce()
     gce_water_data = gce.donnees(gce_water)
     gce_compteur = gce.compteurs(gce_water)
 
-    gce_index_total, gce_index_jour = None, None
+    water_counter_index, water_daily_consumption = None, None
 
     if (gce_water is not None):
-        gce_index_total: int = gce_water_data["INDEX_C1"]
-        gce_index_jour: int = gce_compteur["Day_C1"]
+        water_counter_index: int = gce_water_data["INDEX_C1"]
+        water_daily_consumption: int = gce_compteur["Day_C1"]
 
-    return [gce_index_jour, gce_index_total]
+    return [water_daily_consumption, water_counter_index]
 
 
 if __name__ == "__main__":
-    gce_index_jour, gce_index_total = get_water_indexes()
-    print(" Index jour :", gce_index_jour, "\nIndex total :", gce_index_total)
+    water_daily_consumption, water_counter_index = get_water_indexes()
+    print(" Index jour :", water_daily_consumption,
+          "\nIndex total :", water_counter_index)
