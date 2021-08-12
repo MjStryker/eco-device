@@ -18,7 +18,8 @@ load_dotenv()
 
 ENV = os.getenv("ENV") or "dev"
 
-DB_HOST = os.getenv("DB_HOST")
+# DB_HOST = os.getenv("DB_HOST")
+DB_HOST = "localhost"
 DB_PORT = os.getenv("DB_PORT")
 DB_NAME = os.getenv("DB_NAME")
 DB_USER_NAME = os.getenv("DB_USER_NAME")
@@ -29,9 +30,9 @@ DB_USER_PASSWORD = os.getenv("DB_USER_PASSWORD")
 # -----------------
 # influx -precision rfc3339 -database eco_device_db
 
-# Change default retention policy to 3 years
+# Change default retention policy to 5 years
 # ------------------------------------------
-# ALTER RETENTION POLICY "autogen" ON "eco_device_db" DURATION 1110d
+# ALTER RETENTION POLICY "autogen" ON "eco_device_db" DURATION 1825d
 # SHOW RETENTION POLICIES
 
 # Basic SQL select operation
@@ -55,25 +56,26 @@ def job(client):
     now = datetime.now()
 
     if(ENV == "prod"):
-        water_daily_consumption, water_counter_index = gce.get_water_indexes()
+        water_daily_consumption_in_liter, water_counter_index_in_liter = gce.get_water_indexes()
 
     elif(ENV == "dev"):
-        water_daily_consumption, water_counter_index = generate_random_entry(
+        water_daily_consumption_in_liter, water_counter_index_in_liter = generate_random_entry(
             client, water_data_source)
 
-    # water_daily_consumption, water_counter_index = (12, 92)
+    # water_daily_consumption_in_liter, water_counter_index_in_liter = (0, 0)
+    # water_counter_index_in_m3 = water_counter_index_in_liter / 1000.0
 
     json_body = [{
         "measurement": water_data_source,
         "tags": {},
         "time": now.astimezone(),
         "fields": {
-            "daily_consumption": water_daily_consumption,
-            "counter_index": water_counter_index
+            "daily_consumption": water_daily_consumption_in_liter,
+            "counter_index": water_counter_index_in_liter
         }}]
 
-    print("{now} - {water_daily_consumption} - {water_counter_index}".format(now=now.strftime("%Y-%m-%d %X"),
-                                                                             water_daily_consumption=water_daily_consumption, water_counter_index=water_counter_index))
+    print("{now} - {water_daily_consumption_in_liter} - {water_counter_index_in_liter}".format(now=now.strftime("%Y-%m-%d %X"),
+                                                                                               water_daily_consumption_in_liter=water_daily_consumption_in_liter, water_counter_index_in_liter=water_counter_index_in_liter))
 
     client.write_points(json_body)
 
@@ -111,23 +113,23 @@ if __name__ == "__main__":
 #     job_nb = file_manager.get_file_nb_lines(now) + 1
 
 #     if(ENV == "prod"):
-#         water_daily_consumption , water_counter_index  = gce.get_water_indexes()
-#         print(" Index jour :", water_daily_consumption ,
-#               "\nIndex total :", water_counter_index )
+#         water_daily_consumption_in_liter , water_counter_index_in_liter  = gce.get_water_indexes()
+#         print(" Index jour :", water_daily_consumption_in_liter ,
+#               "\nIndex total :", water_counter_index_in_liter )
 
 #     elif(ENV == "dev"):
-#         water_daily_consumption , water_counter_index  = dev.generate_random_entry(
+#         water_daily_consumption_in_liter , water_counter_index_in_liter  = dev.generate_random_entry(
 #             config.data_source.WATER)
 
-#     addedvalue = " (+{})".format(water_daily_consumption ) if water_daily_consumption  > 0 else ""
+#     addedvalue = " (+{})".format(water_daily_consumption_in_liter ) if water_daily_consumption_in_liter  > 0 else ""
 #     step_str_format = "[ {} / {} ] ".format(job_nb, config.nb_of_steps_per_day)
 
-#     print(" Index jour :", water_daily_consumption,
-#           "\nIndex total :", water_counter_index)
+#     print(" Index jour :", water_daily_consumption_in_liter,
+#           "\nIndex total :", water_counter_index_in_liter)
 
 #     print(step_str_format + datetime.now().strftime("%Y-%m-%d %X") +
-#           " -> " + str(water_counter_index ) + addedvalue)
+#           " -> " + str(water_counter_index_in_liter ) + addedvalue)
 
-#     # if(water_daily_consumption  > 0):
+#     # if(water_daily_consumption_in_liter  > 0):
 #     file_manager.add_indexes(
-#         datetime.now(), water_daily_consumption , water_counter_index )
+#         datetime.now(), water_daily_consumption_in_liter , water_counter_index_in_liter )

@@ -39,6 +39,7 @@ services:
       - DB_USER_PASSWORD=${INFLUXDB_USER_PASSWORD}
     depends_on:
       - db
+    network_mode: "host" # To access local network and connected devices
 
   dashboard:
     image: grafana/grafana:8.1.0

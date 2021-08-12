@@ -12,8 +12,13 @@ def get_water_info():
     return [gce_ip, gce_nom, gce_mac, gce_port]
 
 
+first_gce_device = gce.find_first_gce()
+
+
 def get_water_indexes():
-    gce_water = gce.find_first_gce()
+    gce_water = first_gce_device
+    if (gce_water is None):
+        gce_water = gce.find_first_gce()
     gce_water_data = gce.donnees(gce_water)
     gce_compteur = gce.compteurs(gce_water)
 
