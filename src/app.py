@@ -26,6 +26,10 @@ DB_USER_NAME = os.getenv("DB_USER_NAME")
 DB_USER_PASSWORD = os.getenv("DB_USER_PASSWORD")
 
 
+# TODO: Add backup config (something like this)
+# -----------------------
+# influx backup /path/to/backup/dir/backup_name_$(date '+%Y-%m-%d_%H-%M')
+
 # Open InfluxDB CLI
 # -----------------
 # influx -precision rfc3339 -database eco_device_db
