@@ -1,6 +1,6 @@
 
 import config
-import gce.devices.water as gce
+# import gce.devices.water as gce
 
 from datetime import datetime
 from influxdb import InfluxDBClient
@@ -41,7 +41,7 @@ DB_USER_PASSWORD = os.getenv("DB_USER_PASSWORD")
 
 # Basic SQL select operation
 # --------------------------
-# SELECT daily_consumption FROM WATER
+# SELECT daily_consumption FROM WATER ORDER BY DESC LIMIT 1
 
 
 def wait_for_db_to_be_ready():
@@ -67,6 +67,8 @@ def job(client):
             client, water_data_source)
 
     # water_daily_consumption_in_liter, water_counter_index_in_liter = (0, 0)
+    # water_daily_consumption_in_liter = 1
+    # water_counter_index_in_liter += water_daily_consumption_in_liter
     # water_counter_index_in_m3 = water_counter_index_in_liter / 1000.0
 
     json_body = [{
