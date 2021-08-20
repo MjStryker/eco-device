@@ -6,7 +6,7 @@ services:
   db:
     image: influxdb:1.7-alpine
     container_name: eco-device-db
-    restart: unless-stopped
+    restart: always
     ports:
       - "8086:8086"
     volumes:
@@ -23,7 +23,7 @@ services:
   app:
     image: eco-device-app
     container_name: eco-device-app
-    restart: unless-stopped
+    restart: always
     build:
       context: .
     volumes:
@@ -32,7 +32,7 @@ services:
     tty: true # docker run -t
     environment:
       - ENV=${ENV}
-      - DB_HOST=localhost
+      - DB_HOST=eco-device-db
       - DB_PORT=8086
       - DB_NAME=${INFLUXDB_DB}
       - DB_USER_NAME=${INFLUXDB_USER}
@@ -44,7 +44,7 @@ services:
   dashboard:
     image: grafana/grafana:8.1.0
     container_name: eco-device-dashboard
-    restart: unless-stopped
+    restart: always
     ports:
       - "3000:3000"
     volumes:
