@@ -1,6 +1,6 @@
 
 import config
-# import gce.devices.water as gce
+import gce.devices.water as gce
 
 from datetime import datetime
 from influxdb import InfluxDBClient
@@ -18,8 +18,7 @@ load_dotenv()
 
 ENV = os.getenv("ENV") or "dev"
 
-# DB_HOST = os.getenv("DB_HOST")
-DB_HOST = "localhost"
+DB_HOST = os.getenv("DB_HOST")
 DB_PORT = os.getenv("DB_PORT")
 DB_NAME = os.getenv("DB_NAME")
 DB_USER_NAME = os.getenv("DB_USER_NAME")
@@ -67,9 +66,6 @@ def job(client):
             client, water_data_source)
 
     # water_daily_consumption_in_liter, water_counter_index_in_liter = (0, 0)
-    # water_daily_consumption_in_liter = 1
-    # water_counter_index_in_liter += water_daily_consumption_in_liter
-    # water_counter_index_in_m3 = water_counter_index_in_liter / 1000.0
 
     json_body = [{
         "measurement": water_data_source,
