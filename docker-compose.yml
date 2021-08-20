@@ -32,7 +32,7 @@ services:
     tty: true # docker run -t
     environment:
       - ENV=${ENV}
-      - DB_HOST=eco-device-db
+      - DB_HOST=localhost
       - DB_PORT=8086
       - DB_NAME=${INFLUXDB_DB}
       - DB_USER_NAME=${INFLUXDB_USER}
