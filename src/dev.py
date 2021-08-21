@@ -24,7 +24,14 @@ def utc_to_local(utc_dt):
 def generate_random_entry(client, data_source: str):
     now = datetime.now()
     latest_record_query_res = get_last_db_record(client, data_source.upper())
-    latest_record = next(latest_record_query_res.get_points())
+
+    latest_record_list = list(latest_record_query_res.get_points())
+
+    if(len(latest_record_list) == 0):
+        return (0, 0)
+
+    latest_record = latest_record_list[0]
+    # latest_record = next(latest_record_query_res.get_points())
 
     latest_record_time_str = latest_record["time"]
     latest_record_time_date = utc_to_local(datetime.strptime(
