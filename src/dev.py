@@ -8,7 +8,7 @@ def simulate_water_usage(time):
     if ((time.hour > 21 and time.hour <= 23) or (time.hour >= 0 and time.hour < 7)):
         return randint(0, 120) == 0
 
-    return randint(0, 60) == 0
+    return randint(0, 25) == 0
 
 
 def get_last_db_record(client, data_source: str):
@@ -33,7 +33,7 @@ def generate_random_entry(client, data_source: str):
     daily_consumption = latest_record["daily_consumption"] if latest_record_time_date == now.day else 0
     counter_index = latest_record["counter_index"]
 
-    newvalue = randint(1, 6) if simulate_water_usage(now) else 0
+    newvalue = randint(1, 10) if simulate_water_usage(now) else 0
 
     daily_consumption += newvalue
     counter_index += newvalue

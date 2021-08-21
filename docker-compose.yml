@@ -8,7 +8,7 @@ services:
     container_name: eco-device-db
     restart: always
     ports:
-      - "8086:8086"
+      - ${INFLUXDB_PORT}:${INFLUXDB_PORT}
     volumes:
       - influxdb:/var/lib/influxdb
       - /etc/localtime:/etc/localtime
@@ -33,7 +33,7 @@ services:
     environment:
       - ENV=${ENV}
       - DB_HOST=localhost
-      - DB_PORT=8086
+      - DB_PORT=${INFLUXDB_PORT}
       - DB_NAME=${INFLUXDB_DB}
       - DB_USER_NAME=${INFLUXDB_USER}
       - DB_USER_PASSWORD=${INFLUXDB_USER_PASSWORD}
