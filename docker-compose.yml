@@ -5,13 +5,14 @@ version: "3.9"
 services:
   db:
     image: influxdb:1.7-alpine
-    container_name: eco-device-db
+    container_name: ${DOCKER_DB_CONTAINER_NAME}
     restart: always
     ports:
       - ${INFLUXDB_PORT}:${INFLUXDB_PORT}
     volumes:
       - influxdb:/var/lib/influxdb
-      - ~/Backups/db/eco-devices:/home/backups
+      # - ~/Backups/db/eco-device:/home/backups
+      - ~/${HOST_DB_BACKUP_DIRECTORY}:${DOCKER_DB_BACKUP_DIRECTORY}
       - /etc/localtime:/etc/localtime
     environment:
       - INFLUXDB_DB=${INFLUXDB_DB}
