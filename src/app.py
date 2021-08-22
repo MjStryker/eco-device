@@ -79,7 +79,7 @@ def job(client):
     print("{now} - {water_daily_consumption_in_liter} - {water_counter_index_in_liter}".format(now=now.strftime("%Y-%m-%d %X"),
                                                                                                water_daily_consumption_in_liter=water_daily_consumption_in_liter, water_counter_index_in_liter=water_counter_index_in_liter))
 
-    # client.write_points(json_body)
+    client.write_points(json_body)
 
 
 def wait_until_time_delay():
