@@ -11,6 +11,7 @@ services:
       - ${INFLUXDB_PORT}:${INFLUXDB_PORT}
     volumes:
       - influxdb:/var/lib/influxdb
+      - ~/Backups/db/eco-devices:/home/backups
       - /etc/localtime:/etc/localtime
     environment:
       - INFLUXDB_DB=${INFLUXDB_DB}
