@@ -1,11 +1,11 @@
 version: "3.9"
 
-# docker-compose up --build
+# docker-compose up -d --build
 
 services:
   db:
     image: influxdb:1.7-alpine
-    container_name: ${DOCKER_DB_CONTAINER_NAME}
+    container_name: eco-device-db
     restart: always
     ports:
       - ${INFLUXDB_PORT}:${INFLUXDB_PORT}
