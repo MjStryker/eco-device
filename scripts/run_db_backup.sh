@@ -19,18 +19,29 @@ DOCKER_DB_BACKUP_FULLPATH="$(echo $DOCKER_DB_BACKUP_DIRECTORY | tr -d '"')/$(dat
 # Run db backup
 # -------------
 echo "$(date '+%Y/%m/%d %H:%M:%S') backing up db in docker container '$(echo $DOCKER_DB_CONTAINER_NAME | tr -d '"')'"
-
 docker exec \
   --user "$(id -u):$(id -g)" \
   $(echo $DOCKER_DB_CONTAINER_NAME | tr -d '"') \
-  influxd backup -database $(echo $INFLUXDB_DB | tr -d '"') \
-  $(echo $DOCKER_DB_BACKUP_FULLPATH | tr -d '"') || echo "-" && exit 1
-
-echo "-"
+  influxd backup -portable \
+  $(echo $DOCKER_DB_BACKUP_FULLPATH | tr -d '"') || $(echo "-" && exit 1)
 
 # Remove unnecessary (old) backups folders
 # ----------------------------------------
-# TODO: Find a way to limit backups to something like two folders only...
+echo "$(date '+%Y/%m/%d %H:%M:%S') removing older backup(s) folder(s)"
+path=$HOME/$(echo $HOST_DB_BACKUP_DIRECTORY | tr -d '"')
+cd $path
+backups_to_delete=$(ls -t | awk 'NR>1')
+
+for f in $backups_to_delete; do
+  echo "$(date '+%Y/%m/%d %H:%M:%S') deleting $path/$f"
+  rm -r $f
+done
+
+# rm -r $(ls -t | awk 'NR>1')
+
+# Done
+# ----
+echo "-"
 
 # Other stuff...
 # --------------
