@@ -58,12 +58,12 @@ docker exec -it $(echo $DOCKER_DB_CONTAINER_NAME | tr -d '"') influx -execute "A
 docker exec -it $(echo $DOCKER_DB_CONTAINER_NAME | tr -d '"') influx -execute "SHOW RETENTION POLICIES" -database $(echo $INFLUXDB_DB | tr -d '"') || exit 1
 echo -e " \n\e[1;32m -> Ok! \e[0m\n"
 
-# Create crontab job ("At 00:00 on Sunday." = @weekly)
+# Create crontab job ("At 00:00 on day-of-month 1.." = @monthly)
 # ------------------
-echo -e "\e[1mCreating crontab job to run backup script (every sunday at 00:00) \e[0m\n"
+echo -e "\e[1mCreating crontab job to run backup script (every first day of month at 00:00) \e[0m\n"
 (
   crontab -l 2>/dev/null
-  echo "0 0 * * 0 ~/Dev/eco-device/scripts/run_db_backup.sh >> $CRONTAB_LOGS_DIRECTORY/$(date -d"-0 days" +\%Y-\%m-\%d)_cronlog.log 2>&1"
+  echo "0 0 1 * * ~/Dev/eco-device/scripts/run_db_backup.sh >> $CRONTAB_LOGS_DIRECTORY/$(date -d"-0 days" +\%Y-\%m-\%d)_cronlog.log 2>&1"
 ) | crontab -
 echo crontab -l
 echo -e " \n\e[1;32m -> Ok! \e[0m\n"
