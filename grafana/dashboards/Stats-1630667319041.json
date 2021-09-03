@@ -21,7 +21,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 1,
+  "id": 2,
   "links": [],
   "panels": [
     {
@@ -33,9 +33,9 @@
         "x": 0,
         "y": 0
       },
-      "id": 19,
+      "id": 10,
       "panels": [],
-      "title": "Monitoring (tmp)",
+      "title": "Monitoring",
       "type": "row"
     },
     {
@@ -71,11 +71,11 @@
               },
               {
                 "color": "green",
-                "value": 120
+                "value": 2880
               },
               {
                 "color": "#EAB839",
-                "value": 121
+                "value": 2881
               }
             ]
           }
@@ -114,16 +114,16 @@
         "y": 1
       },
       "hideTimeOverride": false,
-      "id": 23,
+      "id": 8,
       "interval": null,
       "maxDataPoints": null,
       "options": {
-        "colWidth": 0.98,
+        "colWidth": 0.96,
         "legend": {
           "displayMode": "hidden",
           "placement": "bottom"
         },
-        "rowHeight": 0.98,
+        "rowHeight": 0.97,
         "showValue": "auto",
         "tooltip": {
           "mode": "none"
@@ -135,7 +135,7 @@
           "groupBy": [
             {
               "params": [
-                "1h"
+                "1d"
               ],
               "type": "time"
             }
@@ -174,10 +174,158 @@
           "tags": []
         }
       ],
-      "timeFrom": "24h",
+      "timeFrom": null,
       "timeShift": null,
-      "title": "Suivi du nombre de données par  heure",
+      "title": "Suivi du nombre de données par jour",
       "type": "status-history"
+    },
+    {
+      "datasource": null,
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds",
+            "seriesBy": "min"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "axisSoftMax": 2880,
+            "axisSoftMin": 0,
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 12,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 8,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "line"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 2880
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "WATER.count"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Nb données conso journalière"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "WATER.count_1"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Nb données index compteur"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 13,
+        "x": 0,
+        "y": 6
+      },
+      "id": 4,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "pluginVersion": "8.1.0",
+      "targets": [
+        {
+          "groupBy": [
+            {
+              "params": [
+                "1d"
+              ],
+              "type": "time"
+            }
+          ],
+          "measurement": "WATER",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "daily_consumption"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "count"
+              }
+            ],
+            [
+              {
+                "params": [
+                  "counter_index"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "count"
+              }
+            ]
+          ],
+          "tags": []
+        }
+      ],
+      "title": "Suivi du nombre de données par jour",
+      "type": "timeseries"
     },
     {
       "datasource": null,
@@ -223,7 +371,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "semi-dark-blue",
+                "color": "blue",
                 "value": null
               },
               {
@@ -242,7 +390,7 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "Nb données conso journalière"
+                "value": "Nb données conso j.."
               }
             ]
           },
@@ -254,20 +402,20 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "Nb données index compteur"
+                "value": "Nb données index c.."
               }
             ]
           }
         ]
       },
       "gridPos": {
-        "h": 16,
-        "w": 24,
-        "x": 0,
+        "h": 14,
+        "w": 11,
+        "x": 13,
         "y": 6
       },
       "hideTimeOverride": false,
-      "id": 20,
+      "id": 6,
       "interval": null,
       "maxDataPoints": null,
       "options": {
@@ -338,428 +486,12 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 22
+        "y": 20
       },
-      "id": 17,
+      "id": 12,
       "panels": [],
-      "title": "Suivi principal",
+      "title": "Suivi conso eau",
       "type": "row"
-    },
-    {
-      "datasource": null,
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [
-            {
-              "options": {
-                "from": 350,
-                "result": {
-                  "color": "red",
-                  "index": 0
-                },
-                "to": 449
-              },
-              "type": "range"
-            },
-            {
-              "options": {
-                "from": 450,
-                "result": {
-                  "color": "semi-dark-red",
-                  "index": 1
-                },
-                "to": 999
-              },
-              "type": "range"
-            }
-          ],
-          "max": 700,
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 350
-              },
-              {
-                "color": "semi-dark-red",
-                "value": 450
-              }
-            ]
-          },
-          "unit": "none"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 10,
-        "w": 3,
-        "x": 0,
-        "y": 23
-      },
-      "id": 6,
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true,
-        "text": {}
-      },
-      "pluginVersion": "8.1.0",
-      "targets": [
-        {
-          "groupBy": [],
-          "measurement": "WATER",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "SELECT \"daily_consumption\" FROM \"WATER\" ORDER BY DESC LIMIT 1",
-          "rawQuery": true,
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "daily_consumption"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "last"
-              }
-            ]
-          ],
-          "tags": []
-        }
-      ],
-      "title": "Conso journalière (en L)",
-      "type": "gauge"
-    },
-    {
-      "datasource": null,
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds",
-            "seriesBy": "max"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "axisSoftMax": 25,
-            "axisSoftMin": 0,
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 12,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 2,
-            "pointSize": 8,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "line"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 25
-              }
-            ]
-          },
-          "unit": "litre"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 10,
-        "w": 12,
-        "x": 3,
-        "y": 23
-      },
-      "id": 4,
-      "interval": null,
-      "maxDataPoints": null,
-      "options": {
-        "legend": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "pluginVersion": "8.1.0",
-      "targets": [
-        {
-          "alias": "Consommation",
-          "groupBy": [
-            {
-              "params": [
-                "20m"
-              ],
-              "type": "time"
-            }
-          ],
-          "measurement": "WATER",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "SELECT difference(last(\"daily_consumption\"))FROM \"WATER\" WHERE $timeFilter GROUP BY time(1h)",
-          "rawQuery": false,
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "daily_consumption"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "spread"
-              }
-            ]
-          ],
-          "tags": []
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Consommation d'eau par pas de 20 min (en L)",
-      "type": "timeseries"
-    },
-    {
-      "datasource": null,
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds",
-            "seriesBy": "max"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "axisSoftMax": 40,
-            "axisSoftMin": 0,
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 12,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 2,
-            "pointSize": 8,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "line"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 40
-              },
-              {
-                "color": "semi-dark-red",
-                "value": 60
-              }
-            ]
-          },
-          "unit": "litre"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 10,
-        "w": 9,
-        "x": 15,
-        "y": 23
-      },
-      "id": 13,
-      "interval": null,
-      "maxDataPoints": null,
-      "options": {
-        "legend": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "pluginVersion": "8.1.0",
-      "targets": [
-        {
-          "alias": "Consommation",
-          "groupBy": [
-            {
-              "params": [
-                "1h"
-              ],
-              "type": "time"
-            }
-          ],
-          "measurement": "WATER",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "SELECT difference(last(\"daily_consumption\"))FROM \"WATER\" WHERE $timeFilter GROUP BY time(1h)",
-          "rawQuery": false,
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "daily_consumption"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "spread"
-              }
-            ]
-          ],
-          "tags": []
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Consommation d'eau par heure (en L)",
-      "transformations": [],
-      "type": "timeseries"
-    },
-    {
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "blue",
-            "mode": "fixed"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "locale"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 10,
-        "w": 3,
-        "x": 0,
-        "y": 33
-      },
-      "id": 8,
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true,
-        "text": {}
-      },
-      "pluginVersion": "8.1.0",
-      "targets": [
-        {
-          "groupBy": [],
-          "measurement": "WATER",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "SELECT \"counter_index\" FROM \"WATER\" ORDER BY DESC LIMIT 1",
-          "rawQuery": true,
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "counter_index"
-                ],
-                "type": "field"
-              }
-            ]
-          ],
-          "tags": []
-        }
-      ],
-      "title": "Index compteur (en m3)",
-      "type": "gauge"
     },
     {
       "datasource": null,
@@ -785,9 +517,6 @@
               "viz": false
             },
             "lineInterpolation": "linear",
-            "lineStyle": {
-              "fill": "solid"
-            },
             "lineWidth": 2,
             "pointSize": 8,
             "scaleDistribution": {
@@ -812,11 +541,11 @@
                 "value": null
               },
               {
-                "color": "red",
+                "color": "orange",
                 "value": 350
               },
               {
-                "color": "semi-dark-red",
+                "color": "red",
                 "value": 450
               }
             ]
@@ -826,10 +555,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 10,
-        "w": 21,
-        "x": 3,
-        "y": 33
+        "h": 19,
+        "w": 24,
+        "x": 0,
+        "y": 21
       },
       "id": 2,
       "options": {
@@ -841,19 +570,23 @@
           "placement": "bottom"
         },
         "tooltip": {
-          "mode": "multi"
+          "mode": "single"
         }
       },
       "targets": [
         {
           "alias": "Consommation",
-          "groupBy": [],
-          "hide": false,
+          "groupBy": [
+            {
+              "params": [
+                "1d"
+              ],
+              "type": "time"
+            }
+          ],
           "measurement": "WATER",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT \"daily_consumption\" FROM \"WATER\"",
-          "rawQuery": false,
           "refId": "A",
           "resultFormat": "time_series",
           "select": [
@@ -863,17 +596,21 @@
                   "daily_consumption"
                 ],
                 "type": "field"
+              },
+              {
+                "params": [],
+                "type": "spread"
               }
             ]
           ],
           "tags": []
         }
       ],
-      "title": "Consommation d'eau journalière (en L)",
+      "title": "Consommation d'eau par jour (en L)",
       "type": "timeseries"
     }
   ],
-  "refresh": "30s",
+  "refresh": "30m",
   "schemaVersion": 30,
   "style": "dark",
   "tags": [],
@@ -881,12 +618,12 @@
     "list": []
   },
   "time": {
-    "from": "now-12h",
+    "from": "now-30d",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
-  "title": "Dashboard principal",
-  "uid": "JVNYf8G7k",
-  "version": 82
+  "title": "Stats",
+  "uid": "pJdgjP77k",
+  "version": 5
 }
